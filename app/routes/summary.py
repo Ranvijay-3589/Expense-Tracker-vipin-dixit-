@@ -1,0 +1,26 @@
+from datetime import date
+from decimal import Decimal
+
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.models.expense import Expense
+from app.schemas.expense import CategoryTotal, DailySummary
+
+router = APIRouter(prefix="/api/summary", tags=["summary"])
+
+
+@router.get("", response_model=DailySummary)
+def get_summary(date: date = Query(...), db: Session = Depends(get_db)) -> DailySummary:
+    stmt = (
+        select(Expense.category, func.coalesce(func.sum(Expense.amount), 0).label("total"))
+        .where(Expense.date == date)
+        .group_by(Expense.category)
+        .order_by(Expense.category.asc())
+    )
+
+    totals = [CategoryTotal(category=row.category, total=row.total) for row in db.execute(stmt)]
+    grand_total = sum((item.total for item in totals), Decimal("0"))
+    return DailySummary(date=date, totals=totals, grand_total=grand_total)
