@@ -1,1 +1,7 @@
 .chat_images/
+.env
+venv/
+__pycache__/
+*.pyc
+frontend/node_modules/
+frontend/build/
