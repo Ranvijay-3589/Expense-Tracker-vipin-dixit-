@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import Base, engine
+from app.models.user import User  # noqa: F401 - ensure User table is created
+from app.routes.auth import router as auth_router
 from app.routes.expenses import router as expenses_router
 from app.routes.summary import router as summary_router
 
@@ -19,6 +21,7 @@ app.add_middleware(
 
 Base.metadata.create_all(bind=engine)
 
+app.include_router(auth_router)
 app.include_router(expenses_router)
 app.include_router(summary_router)
 

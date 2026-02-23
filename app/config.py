@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     database_url: str = build_database_url()
     cors_origins: str = "https://ranvijay.capricorn.online,http://ranvijay.capricorn.online"
     app_port: int = int(os.getenv("PORT", "5007"))
+    jwt_secret: str = os.getenv("JWT_SECRET", "change-me-in-production")
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 

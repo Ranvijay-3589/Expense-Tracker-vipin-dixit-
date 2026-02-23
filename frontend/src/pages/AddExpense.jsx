@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import CategoryTotals from "../components/CategoryTotals";
 import ExpenseForm from "../components/ExpenseForm";
 import ExpenseList from "../components/ExpenseList";
+import { useAuth } from "../context/AuthContext";
 import { createExpense, deleteExpense, getExpensesByDate, getSummaryByDate } from "../services/api";
 
 const todayISO = new Date().toISOString().slice(0, 10);
 
 export default function AddExpensePage() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(todayISO);
   const [expenses, setExpenses] = useState([]);
   const [summary, setSummary] = useState({ totals: [], grand_total: 0 });
@@ -63,9 +67,20 @@ export default function AddExpensePage() {
 
   return (
     <main className="mx-auto max-w-4xl p-4 md:p-8">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Expense Tracker</h1>
-        <p className="text-sm text-slate-600">Add and view daily expenses by date.</p>
+      <header className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Expense Tracker</h1>
+          <p className="text-sm text-slate-600">
+            Welcome, <span className="font-medium">{user?.username}</span> &mdash; Add and view daily expenses.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => { logout(); navigate("/login"); }}
+          className="rounded-md border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+        >
+          Logout
+        </button>
       </header>
 
       <section className="mb-6 rounded-lg border bg-white p-4 shadow-sm">
