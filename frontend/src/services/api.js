@@ -53,6 +53,11 @@ export const createExpense = async (payload) => {
   return response.data;
 };
 
+export const updateExpense = async (id, payload) => {
+  const response = await api.put(`/api/expenses/${id}`, payload);
+  return response.data;
+};
+
 export const deleteExpense = async (id) => {
   await api.delete(`/api/expenses/${id}`);
 };

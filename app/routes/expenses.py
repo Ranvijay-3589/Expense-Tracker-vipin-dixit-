@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.expense import Expense
 from app.models.user import User
-from app.schemas.expense import ExpenseCreate, ExpenseResponse
+from app.schemas.expense import ExpenseCreate, ExpenseResponse, ExpenseUpdate
 from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/api/expenses", tags=["expenses"])
@@ -44,6 +44,28 @@ def list_expenses(
         .order_by(Expense.created_at.desc())
     )
     return list(db.scalars(stmt))
+
+
+@router.put("/{expense_id}", response_model=ExpenseResponse)
+def update_expense(
+    expense_id: int,
+    payload: ExpenseUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> ExpenseResponse:
+    expense = db.get(Expense, expense_id)
+    if expense is None or expense.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Expense not found")
+
+    update_data = payload.model_dump(exclude_none=True)
+    if "note" in update_data:
+        update_data["note"] = update_data["note"].strip()
+    for key, value in update_data.items():
+        setattr(expense, key, value)
+
+    db.commit()
+    db.refresh(expense)
+    return expense
 
 
 @router.delete("/{expense_id}", status_code=status.HTTP_204_NO_CONTENT)

@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
+from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -16,6 +17,20 @@ class ExpenseCreate(BaseModel):
     @classmethod
     def validate_category(cls, value: str) -> str:
         if value not in CATEGORIES:
+            raise ValueError(f"Category must be one of: {', '.join(CATEGORIES)}")
+        return value
+
+
+class ExpenseUpdate(BaseModel):
+    date: Optional[date] = None
+    category: Optional[str] = None
+    amount: Optional[Decimal] = Field(default=None, gt=0, decimal_places=2)
+    note: Optional[str] = Field(default=None, max_length=100)
+
+    @field_validator("category")
+    @classmethod
+    def validate_category(cls, value: Optional[str]) -> Optional[str]:
+        if value is not None and value not in CATEGORIES:
             raise ValueError(f"Category must be one of: {', '.join(CATEGORIES)}")
         return value
 

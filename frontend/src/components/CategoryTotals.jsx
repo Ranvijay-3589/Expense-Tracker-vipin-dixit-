@@ -9,7 +9,7 @@ export default function CategoryTotals({ summary }) {
           {summary.totals.map((item) => (
             <li key={item.category} className="flex items-center justify-between py-2 text-sm">
               <span className="text-slate-700">{item.category}</span>
-              <span className="font-medium text-slate-900">${Number(item.total).toFixed(2)}</span>
+              <span className="font-medium text-slate-900">₹{Number(item.total).toFixed(2)}</span>
             </li>
           ))}
         </ul>
@@ -17,7 +17,7 @@ export default function CategoryTotals({ summary }) {
 
       <div className="mt-4 flex items-center justify-between border-t pt-3 font-semibold">
         <span>Grand Total</span>
-        <span>${Number(summary.grand_total || 0).toFixed(2)}</span>
+        <span>₹{Number(summary.grand_total || 0).toFixed(2)}</span>
       </div>
     </div>
   );

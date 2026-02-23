@@ -5,7 +5,7 @@ import CategoryTotals from "../components/CategoryTotals";
 import ExpenseForm from "../components/ExpenseForm";
 import ExpenseList from "../components/ExpenseList";
 import { useAuth } from "../context/AuthContext";
-import { createExpense, deleteExpense, getExpensesByDate, getSummaryByDate } from "../services/api";
+import { createExpense, deleteExpense, updateExpense, getExpensesByDate, getSummaryByDate } from "../services/api";
 
 const todayISO = new Date().toISOString().slice(0, 10);
 
@@ -50,6 +50,16 @@ export default function AddExpensePage() {
       setError("Unable to add expense.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEdit = async (id, payload) => {
+    try {
+      setError("");
+      await updateExpense(id, payload);
+      await fetchData();
+    } catch {
+      setError("Unable to update expense.");
     }
   };
 
@@ -104,7 +114,7 @@ export default function AddExpensePage() {
       </div>
 
       <section className="mt-6">
-        <ExpenseList expenses={expenses} onDelete={handleDelete} deletingId={deletingId} />
+        <ExpenseList expenses={expenses} onDelete={handleDelete} onEdit={handleEdit} deletingId={deletingId} />
       </section>
     </main>
   );
