@@ -1,4 +1,4 @@
-from datetime import date, datetime
+import datetime as dt
 from decimal import Decimal
 from typing import Optional
 
@@ -8,7 +8,7 @@ from app.utils.categories import CATEGORIES
 
 
 class ExpenseCreate(BaseModel):
-    date: date
+    date: dt.date
     category: str
     amount: Decimal = Field(gt=0, decimal_places=2)
     note: str = Field(default="", max_length=100)
@@ -22,7 +22,7 @@ class ExpenseCreate(BaseModel):
 
 
 class ExpenseUpdate(BaseModel):
-    date: Optional[date] = None
+    date: Optional[dt.date] = None
     category: Optional[str] = None
     amount: Optional[Decimal] = Field(default=None, gt=0, decimal_places=2)
     note: Optional[str] = Field(default=None, max_length=100)
@@ -37,11 +37,11 @@ class ExpenseUpdate(BaseModel):
 
 class ExpenseResponse(BaseModel):
     id: int
-    date: date
+    date: dt.date
     category: str
     amount: Decimal
     note: str
-    created_at: datetime
+    created_at: dt.datetime
 
     model_config = {"from_attributes": True}
 
@@ -52,6 +52,6 @@ class CategoryTotal(BaseModel):
 
 
 class DailySummary(BaseModel):
-    date: date
+    date: dt.date
     totals: list[CategoryTotal]
     grand_total: Decimal

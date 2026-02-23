@@ -1,4 +1,4 @@
-from datetime import date
+import datetime as dt
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
@@ -34,7 +34,7 @@ def create_expense(
 
 @router.get("", response_model=list[ExpenseResponse])
 def list_expenses(
-    date: date = Query(...),
+    date: dt.date = Query(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> list[ExpenseResponse]:

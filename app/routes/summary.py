@@ -1,4 +1,4 @@
-from datetime import date
+import datetime as dt
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, Query
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/api/summary", tags=["summary"])
 
 @router.get("", response_model=DailySummary)
 def get_summary(
-    date: date = Query(...),
+    date: dt.date = Query(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> DailySummary:
