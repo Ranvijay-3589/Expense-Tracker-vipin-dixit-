@@ -5,6 +5,7 @@ const CATEGORIES = ["Food", "Transport", "Bills", "Shopping", "Entertainment", "
 const initialForm = (selectedDate) => ({
   date: selectedDate,
   category: CATEGORIES[0],
+  customCategory: "",
   amount: "",
   note: "",
 });
@@ -21,6 +22,9 @@ export default function ExpenseForm({ selectedDate, onSubmit, loading }) {
     const nextErrors = {};
     if (!form.date) nextErrors.date = "Date is required";
     if (!form.category) nextErrors.category = "Category is required";
+    if (form.category === "Other" && !form.customCategory.trim()) {
+      nextErrors.customCategory = "Please enter a custom category name";
+    }
     if (!form.amount || Number(form.amount) <= 0) nextErrors.amount = "Amount must be greater than 0";
     if (form.note.length > 100) nextErrors.note = "Note must be 100 characters or less";
     setErrors(nextErrors);
@@ -36,9 +40,11 @@ export default function ExpenseForm({ selectedDate, onSubmit, loading }) {
     event.preventDefault();
     if (!validate()) return;
 
+    const finalCategory = form.category === "Other" ? form.customCategory.trim() : form.category;
+
     await onSubmit({
       date: form.date,
-      category: form.category,
+      category: finalCategory,
       amount: Number(form.amount).toFixed(2),
       note: form.note.trim(),
     });
@@ -81,6 +87,26 @@ export default function ExpenseForm({ selectedDate, onSubmit, loading }) {
         </select>
         {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category}</p>}
       </div>
+
+      {form.category === "Other" && (
+        <div>
+          <label className="block text-sm font-medium text-slate-700" htmlFor="customCategory">
+            Custom Category Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="customCategory"
+            name="customCategory"
+            type="text"
+            maxLength={50}
+            value={form.customCategory}
+            onChange={handleChange}
+            className="mt-1 w-full rounded-md border px-3 py-2"
+            placeholder="Enter custom category name"
+            required
+          />
+          {errors.customCategory && <p className="mt-1 text-sm text-red-600">{errors.customCategory}</p>}
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium text-slate-700" htmlFor="amount">Amount</label>

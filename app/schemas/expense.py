@@ -4,34 +4,29 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
-from app.utils.categories import CATEGORIES
-
-
 class ExpenseCreate(BaseModel):
     date: dt.date
-    category: str
+    category: str = Field(min_length=1, max_length=50)
     amount: Decimal = Field(gt=0, decimal_places=2)
     note: str = Field(default="", max_length=100)
 
     @field_validator("category")
     @classmethod
     def validate_category(cls, value: str) -> str:
-        if value not in CATEGORIES:
-            raise ValueError(f"Category must be one of: {', '.join(CATEGORIES)}")
-        return value
+        return value.strip()
 
 
 class ExpenseUpdate(BaseModel):
     date: Optional[dt.date] = None
-    category: Optional[str] = None
+    category: Optional[str] = Field(default=None, min_length=1, max_length=50)
     amount: Optional[Decimal] = Field(default=None, gt=0, decimal_places=2)
     note: Optional[str] = Field(default=None, max_length=100)
 
     @field_validator("category")
     @classmethod
     def validate_category(cls, value: Optional[str]) -> Optional[str]:
-        if value is not None and value not in CATEGORIES:
-            raise ValueError(f"Category must be one of: {', '.join(CATEGORIES)}")
+        if value is not None:
+            return value.strip()
         return value
 
 

@@ -4,14 +4,16 @@ const CATEGORIES = ["Food", "Transport", "Bills", "Shopping", "Entertainment", "
 
 export default function ExpenseList({ expenses, onDelete, onEdit, deletingId, showDate = false }) {
   const [editingId, setEditingId] = useState(null);
-  const [editForm, setEditForm] = useState({ date: "", category: "", amount: "", note: "" });
+  const [editForm, setEditForm] = useState({ date: "", category: "", customCategory: "", amount: "", note: "" });
   const [saving, setSaving] = useState(false);
 
   const startEdit = (expense) => {
+    const isPreset = CATEGORIES.includes(expense.category);
     setEditingId(expense.id);
     setEditForm({
       date: expense.date,
-      category: expense.category,
+      category: isPreset ? expense.category : "Other",
+      customCategory: isPreset ? "" : expense.category,
       amount: Number(expense.amount),
       note: expense.note || "",
     });
@@ -19,7 +21,7 @@ export default function ExpenseList({ expenses, onDelete, onEdit, deletingId, sh
 
   const cancelEdit = () => {
     setEditingId(null);
-    setEditForm({ date: "", category: "", amount: "", note: "" });
+    setEditForm({ date: "", category: "", customCategory: "", amount: "", note: "" });
   };
 
   const handleEditChange = (e) => {
@@ -29,11 +31,15 @@ export default function ExpenseList({ expenses, onDelete, onEdit, deletingId, sh
 
   const handleSave = async (id) => {
     if (!editForm.date || !editForm.category || !editForm.amount || Number(editForm.amount) <= 0) return;
+    if (editForm.category === "Other" && !editForm.customCategory.trim()) return;
+
+    const finalCategory = editForm.category === "Other" ? editForm.customCategory.trim() : editForm.category;
+
     setSaving(true);
     try {
       await onEdit(id, {
         date: editForm.date,
-        category: editForm.category,
+        category: finalCategory,
         amount: Number(editForm.amount).toFixed(2),
         note: editForm.note.trim(),
       });
@@ -129,6 +135,23 @@ export default function ExpenseList({ expenses, onDelete, onEdit, deletingId, sh
                             />
                           </div>
                         </div>
+                        {editForm.category === "Other" && (
+                          <div>
+                            <label className="block text-xs font-medium text-slate-600">
+                              Custom Category Name <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="customCategory"
+                              maxLength={50}
+                              value={editForm.customCategory}
+                              onChange={handleEditChange}
+                              className="mt-1 w-full rounded border px-2 py-1 text-sm"
+                              placeholder="Enter custom category name"
+                              required
+                            />
+                          </div>
+                        )}
                         <div className="flex gap-2 pt-1">
                           <button
                             type="button"
