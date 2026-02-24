@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
@@ -34,15 +35,20 @@ def create_expense(
 
 @router.get("", response_model=list[ExpenseResponse])
 def list_expenses(
-    date: dt.date = Query(...),
+    date: Optional[dt.date] = Query(None),
+    start_date: Optional[dt.date] = Query(None),
+    end_date: Optional[dt.date] = Query(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> list[ExpenseResponse]:
-    stmt = (
-        select(Expense)
-        .where(Expense.user_id == current_user.id, Expense.date == date)
-        .order_by(Expense.created_at.desc())
-    )
+    stmt = select(Expense).where(Expense.user_id == current_user.id)
+
+    if date is not None:
+        stmt = stmt.where(Expense.date == date)
+    elif start_date is not None and end_date is not None:
+        stmt = stmt.where(Expense.date >= start_date, Expense.date <= end_date)
+
+    stmt = stmt.order_by(Expense.date.desc(), Expense.created_at.desc())
     return list(db.scalars(stmt))
 
 

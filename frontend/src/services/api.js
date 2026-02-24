@@ -48,6 +48,16 @@ export const getExpensesByDate = async (date) => {
   return response.data;
 };
 
+export const getExpensesByRange = async (startDate, endDate) => {
+  const response = await api.get("/api/expenses", { params: { start_date: startDate, end_date: endDate } });
+  return response.data;
+};
+
+export const getAllExpenses = async () => {
+  const response = await api.get("/api/expenses");
+  return response.data;
+};
+
 export const createExpense = async (payload) => {
   const response = await api.post("/api/expenses", payload);
   return response.data;
@@ -62,7 +72,18 @@ export const deleteExpense = async (id) => {
   await api.delete(`/api/expenses/${id}`);
 };
 
+// Summary
 export const getSummaryByDate = async (date) => {
   const response = await api.get("/api/summary", { params: { date } });
+  return response.data;
+};
+
+export const getSummaryByRange = async (startDate, endDate) => {
+  const response = await api.get("/api/summary", { params: { start_date: startDate, end_date: endDate } });
+  return response.data;
+};
+
+export const getAllSummary = async () => {
+  const response = await api.get("/api/summary");
   return response.data;
 };

@@ -55,3 +55,8 @@ class DailySummary(BaseModel):
     date: dt.date
     totals: list[CategoryTotal]
     grand_total: Decimal
+
+
+class PeriodSummary(BaseModel):
+    totals: list[CategoryTotal]
+    grand_total: Decimal
