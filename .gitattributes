@@ -1,0 +1,6 @@
+CHANGELOG.md merge=union
+CHANGELOG merge=union
+CHANGES.md merge=union
+HISTORY.md merge=union
+RELEASE_NOTES.md merge=union
+RELEASES.md merge=union
