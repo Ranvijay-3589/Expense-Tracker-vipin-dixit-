@@ -1,0 +1,8 @@
+# Written by CMDSetup when absent. Edit freely - it is not overwritten.
+.worktrees/
+.git/
+node_modules/
+dist/
+build/
+.next/
+vendor/
